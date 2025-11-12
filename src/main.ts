@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { io } from 'socket.io-client';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +16,14 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); // 👈 Swagger URL: /api
+
+  const socket = io('http://localhost:3000/notifications', {
+  query: { token: 'Bearer-less-JWT' } // or { token: '<JWT>' }
+});
+// When server emits 'newNotification', you'll receive it:
+socket.on('newNotification', data => {
+  console.log('New notification:', data);
+});
 
 
 
