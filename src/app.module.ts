@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
@@ -9,14 +10,26 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ReactionsModule } from './reactions/reactions.module';
 import { NotificationsModule } from './notifications/notifications.module';
-
-
-
-
-
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UsersModule, PostsModule, CommentsModule, ReactionsModule, NotificationsModule, UploadsModule, EventsModule],
+  imports: [
+    // ✅ Make sure .env file is loaded globally
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    EventEmitterModule.forRoot(),
+    AuthModule,
+    UsersModule,
+    PostsModule,
+    CommentsModule,
+    ReactionsModule,
+    NotificationsModule,
+    UploadsModule,
+    EventsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
