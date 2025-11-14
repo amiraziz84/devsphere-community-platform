@@ -5,10 +5,21 @@ import { NotificationsService } from './notifications.service';
 describe('NotificationsController', () => {
   let controller: NotificationsController;
 
+  const mockNotificationsService = {
+    createNotification: jest.fn(),
+    getUserNotifications: jest.fn(),
+    markAsRead: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [NotificationsController],
-      providers: [NotificationsService],
+      providers: [
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
+        },
+      ],
     }).compile();
 
     controller = module.get<NotificationsController>(NotificationsController);

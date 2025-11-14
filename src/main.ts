@@ -1,40 +1,41 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { io } from 'socket.io-client';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-
+import { Logger } from 'nestjs-pino';
+import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Create app with Pino logger
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(Logger));
 
-  // Serve uploaded files publicly
+  // Serve uploads
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
 
-  // Swagger Config
+  
+
+  // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('Community Platform API')
     .setDescription('API documentation for Auth, Posts, Comments, and Notifications.')
     .setVersion('1.0')
-    .addBearerAuth() // 👈 JWT token input enable karta hai
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); // 👈 Swagger URL: /api
+  SwaggerModule.setup('api', app, document);
 
-  const socket = io('http://localhost:3000/notifications', {
-  query: { token: 'Bearer-less-JWT' } // or { token: '<JWT>' }
-});
-// When server emits 'newNotification', you'll receive it:
-socket.on('newNotification', data => {
-  console.log('New notification:', data);
-});
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
 
-
-
-  await app.listen(process.env.PORT ?? 3000);
+  const logger = app.get(Logger);
+  logger.log(`🚀 Application is running on: http://localhost:${port}`);
+  logger.log(`📘 Swagger Docs: http://localhost:${port}/api`);
 }
 bootstrap();

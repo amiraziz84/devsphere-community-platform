@@ -8,7 +8,21 @@ describe('ReactionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ReactionsController],
-      providers: [ReactionsService],
+      providers: [
+        {
+          provide: ReactionsService,
+          useValue: {
+            createReaction: jest.fn().mockResolvedValue({
+              id: 1,
+              type: 'LIKE',
+            }),
+            removeReaction: jest.fn().mockResolvedValue({
+              success: true,
+            }),
+            getReactionsByPost: jest.fn().mockResolvedValue([]),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ReactionsController>(ReactionsController);

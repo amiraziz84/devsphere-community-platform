@@ -6,7 +6,18 @@ describe('UploadsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UploadsService],
+      providers: [
+        UploadsService,
+        {
+          provide: 'CLOUDINARY', // 👈 Cloudinary mock provider
+          useValue: {
+            upload: jest.fn().mockResolvedValue({
+              url: 'https://cloudinary.com/dummy-image.jpg',
+              public_id: 'test123',
+            }),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<UploadsService>(UploadsService);
