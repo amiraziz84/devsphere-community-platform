@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerModule } from 'nestjs-pino';
@@ -7,6 +7,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { MetricsModule } from './metrics/metrics.module';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
+
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
@@ -15,6 +16,11 @@ import { ReactionsModule } from './reactions/reactions.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { EventsModule } from './events/events.module';
+import { SearchModule } from './search/search.module';
+
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
+
 
 @Module({
   imports: [
@@ -36,13 +42,18 @@ import { EventsModule } from './events/events.module';
     NotificationsModule,
     UploadsModule,
     EventsModule,
-    MetricsModule, // ✅ imported here
+    MetricsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+
+    
+
+    // ⭐ GLOBAL METRICS INTERCEPTOR
     {
-      provide: APP_INTERCEPTOR, // ✅ globally apply the metrics interceptor
+      provide: APP_INTERCEPTOR,
       useClass: MetricsInterceptor,
     },
   ],

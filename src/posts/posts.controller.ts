@@ -1,4 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+// src/posts/posts.controller.ts
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -12,36 +16,46 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
-  
-  // create post 
+
   @Post()
-  create(@CurrentUser('userId') userId: string, @Body() dto: CreatePostDto) {
-    return this.postsService.create(userId,dto);
-  }
-  // Get all posts (pagination + filter)
-  @Get()
-  findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-    @Query('tag') tag?: string,
+  @UseInterceptors(
+    FileInterceptor('banner', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  create(
+    @CurrentUser('userId') userId: string,
+    @UploadedFile() banner: Express.Multer.File,
+    @Body() dto: CreatePostDto,
   ) {
+    return this.postsService.create(userId, dto, banner);
+  }
+
+  @Get()
+  findAll(@Query('page') page = 1, @Query('limit') limit = 10, @Query('tag') tag?: string) {
     return this.postsService.findAll(Number(page), Number(limit), tag);
   }
-  // Get single post
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
-  // updata post
+
   @Patch(':id')
   update(@Param('id') id: string, @CurrentUser('userId') userId: string, @Body() dto: UpdatePostDto) {
-    return this.postsService.update(id,userId, dto);
+    return this.postsService.update(id, userId, dto);
   }
-  // delete post
+
   @Delete(':id')
   @Roles('Admin')
   remove(@Param('id') id: string, @CurrentUser('userId') userId: string, @CurrentUser('role') role: Role) {
-    const isAdmin = role == 'ADMIN';
+    const isAdmin = role === 'ADMIN';
     return this.postsService.remove(id, userId, isAdmin);
   }
 }

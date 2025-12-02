@@ -7,8 +7,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 
-
-
 @Module({
   imports: [
     PassportModule,
