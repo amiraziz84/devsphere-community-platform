@@ -76,7 +76,7 @@ export class PostsService {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          author: { select: { id: true, name: true, email: true } },
+          author: { select: { id: true, name: true, email: true,profilePic: true } },
         },
       }),
 
@@ -124,7 +124,7 @@ export class PostsService {
     const post = await this.prisma.post.findUnique({
       where: { id },
       include: {
-        author: { select: { id: true, name: true, email: true } },
+        author: { select: { id: true, name: true, email: true, profilePic: true } },
         comments: true,
       },
     });
@@ -179,7 +179,7 @@ export class PostsService {
         tags: tagsArray,
       },
       include: {
-        author: { select: { id: true, name: true, email: true } },
+        author: { select: { id: true, name: true, email: true, profilePic: true } },
       },
     });
 

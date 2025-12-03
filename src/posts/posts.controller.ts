@@ -1,5 +1,7 @@
-// src/posts/posts.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { 
+  Controller, Get, Post, Body, Patch, Param, Delete, 
+  Query, UseGuards, UseInterceptors, UploadedFile 
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -13,17 +15,19 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('posts')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  // ⛔ Only this route needs guard
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('banner', {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           cb(null, uniqueSuffix + extname(file.originalname));
         },
       }),
@@ -37,24 +41,42 @@ export class PostsController {
     return this.postsService.create(userId, dto, banner);
   }
 
+  // ✅ PUBLIC ROUTE
   @Get()
-  findAll(@Query('page') page = 1, @Query('limit') limit = 10, @Query('tag') tag?: string) {
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('tag') tag?: string,
+  ) {
     return this.postsService.findAll(Number(page), Number(limit), tag);
   }
 
+  // ✅ PUBLIC ROUTE
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
+  // 🔒 Protected route
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @CurrentUser('userId') userId: string, @Body() dto: UpdatePostDto) {
+  update(
+    @Param('id') id: string,
+    @CurrentUser('userId') userId: string,
+    @Body() dto: UpdatePostDto,
+  ) {
     return this.postsService.update(id, userId, dto);
   }
 
+  // 🔒 Admin delete route
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Delete(':id')
-  @Roles('Admin')
-  remove(@Param('id') id: string, @CurrentUser('userId') userId: string, @CurrentUser('role') role: Role) {
+  remove(
+    @Param('id') id: string,
+    @CurrentUser('userId') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
     const isAdmin = role === 'ADMIN';
     return this.postsService.remove(id, userId, isAdmin);
   }

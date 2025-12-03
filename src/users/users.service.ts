@@ -53,16 +53,21 @@ export class UsersService {
 
   // 🔹 Update profile picture
   async updateProfilePic(userId: string, filename: string) {
-    const profilePicPath = `/uploads/profile/${filename}`;
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { profilePic: profilePicPath },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        profilePic: true,
-      },
-    });
-  }
+  // Remove ANY 'uploads/profile/' from beginning
+  let cleaned = filename.replace(/uploads\/profile\//g, "").replace(/^\//, "");
+
+  // Final correct path
+  const profilePicPath = `/uploads/profile/${cleaned}`;
+
+  return this.prisma.user.update({
+    where: { id: userId },
+    data: { profilePic: profilePicPath },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      profilePic: true,
+    },
+  });
+}
 }
