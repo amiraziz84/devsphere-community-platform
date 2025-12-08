@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.useLogger(app.get(Logger));
 
-  // Redis
+  // ===== Redis connection =====
   const redisUrl = process.env.REDIS_URL;
   if (redisUrl) {
     const redisClient = new Redis(redisUrl);
@@ -21,24 +21,23 @@ async function bootstrap() {
     redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 
-  // ⭐ FINAL CORS FIX ⭐
-  const allowedOrigins = [
-    'https://super-gelato-a9840f.netlify.app', // your Netlify frontend
-    'http://localhost:5173',                   // local dev
-  ];
-
+  // ===== FIXED CORS =====
   app.enableCors({
-    origin: allowedOrigins,
-    methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    origin: [
+      'https://super-gelato-a9840f.netlify.app',
+      'http://localhost:5173',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
-  // Static Uploads
+  // ===== Serve uploads =====
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads',
   });
 
-  // Swagger
+  // ===== Swagger =====
   const config = new DocumentBuilder()
     .setTitle('Community Platform API')
     .setDescription('API docs')
@@ -52,7 +51,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
 
-  console.log(`🚀 Running on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
 }
 
 bootstrap();
