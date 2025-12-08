@@ -14,43 +14,43 @@ enum Role {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  name      String
-  email     String     @unique
-  password  String
-  role      Role       @default(USER)
-  profilePic  String?   // <—— ADD THIS LINE
-  posts     Post[]
-  comments  Comment[]
-  reactions Reaction[] // ✅ Opposite relation added
-  notifications Notification[]  // 👈 added relation here
-  createdAt DateTime   @default(now())
+  id            String           @id @default(uuid())
+  name          String
+  email         String           @unique
+  password      String
+  role          Role             @default(USER)
+  profilePic    String?
+  posts         Post[]
+  comments      Comment[]
+  reactions     Reaction[]
+  notifications Notification[]
+  createdAt     DateTime         @default(now())
 }
 
 model Post {
-  id        String     @id @default(uuid())
+  id        String       @id @default(uuid())
   title     String
   content   String
   bannerUrl String?
   tags      String[]
   authorId  String
-  author    User       @relation(fields: [authorId], references: [id])
+  author    User         @relation(fields: [authorId], references: [id])
   comments  Comment[]
-  createdAt DateTime   @default(now())
-  reactions Reaction[] // ✅ Opposite relation added
-  updatedAt DateTime   @updatedAt
+  reactions Reaction[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model Comment {
-  id        String     @id @default(uuid()) //Har comment ka unique ID (auto generate hota hai).
-  content   String //Comment ka actual text ya message.
-  authorId  String //Ye us user ka ID hai jisne comment likha hai.
-  postId    String //Agar null hai to ye top-level comment hai
-  parentId  String? // for nested comments
-  author    User       @relation(fields: [authorId], references: [id]) //Kis user ne comment likha.
-  post      Post       @relation(fields: [postId], references: [id]) //Kis post ke saath comment linked hai.
-  reactions Reaction[] // ✅ Opposite relation added
-  createdAt DateTime   @default(now()) //Comment kab create hua.
+  id        String     @id @default(uuid())
+  content   String
+  authorId  String
+  postId    String
+  parentId  String?
+  author    User       @relation(fields: [authorId], references: [id])
+  post      Post       @relation(fields: [postId], references: [id])
+  reactions Reaction[]
+  createdAt DateTime   @default(now())
 }
 
 model Reaction {
@@ -65,7 +65,6 @@ model Reaction {
   createdAt DateTime     @default(now())
 
   @@unique([userId, postId, commentId])
-
 }
 
 enum ReactionType {
@@ -80,7 +79,7 @@ model Notification {
   title       String?
   message     String
   type        NotificationType
-  referenceId String?          // postId / commentId / other
+  referenceId String?
   isRead      Boolean          @default(false)
   createdAt   DateTime         @default(now())
 }
@@ -92,4 +91,3 @@ enum NotificationType {
   SYSTEM
   POST
 }
-

@@ -2,26 +2,26 @@ import path from "path";
 import dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
 
-// ✅ Load .env file safely from backend root
+// ⭐ Load .env from backend root
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-// ✅ Log environment variable status
+// ⭐ Check DATABASE_URL exists or not
 if (!process.env.DATABASE_URL) {
   console.warn(
-    "\x1b[33m[Prisma Warning]\x1b[0m DATABASE_URL is not defined.\n" +
-      "→ Ensure you have a .env file in your backend root (e.g. D:\\community-platform\\backend-system\\.env)"
+    "\x1b[33m[Prisma Warning]\x1b[0m DATABASE_URL is missing!\n" +
+      "→ Make sure your .env is placed at: backend-system/.env\n"
   );
 } else {
-  console.log("\x1b[32m[Prisma]\x1b[0m DATABASE_URL detected successfully.");
+  console.log("\x1b[32m[Prisma]\x1b[0m DATABASE_URL loaded successfully.");
 }
 
-// ✅ Correct Prisma config (no unsupported properties)
+// ⭐ Prisma configuration
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
-  engine: "classic",
+  engine: "classic", // default Prisma engine
   datasource: {
     url: process.env.DATABASE_URL || "",
   },
