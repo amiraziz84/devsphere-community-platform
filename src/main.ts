@@ -21,26 +21,26 @@ async function bootstrap() {
     redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 
-  // ===== FIXED CORS =====
+  // ===== FIXED CORS FOR RAILWAY + NETLIFY =====
   app.enableCors({
     origin: [
-      'https://super-gelato-a9840f.netlify.app',
       'http://localhost:5173',
+      'https://super-gelato-a9840f.netlify.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
-  // ===== Serve uploads =====
+  // ===== Static Uploads =====
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads',
   });
 
-  // ===== Swagger =====
+  // ===== Swagger Setup =====
   const config = new DocumentBuilder()
     .setTitle('Community Platform API')
-    .setDescription('API docs')
+    .setDescription('API docs for Auth, Posts, Comments, Notifications')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -48,10 +48,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  // ===== Start Server =====
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
 
   console.log(`🚀 Server running on port ${port}`);
+  console.log(`⚙️  CORS allowed origins: http://localhost:5173 , https://super-gelato-a9840f.netlify.app`);
 }
 
 bootstrap();
