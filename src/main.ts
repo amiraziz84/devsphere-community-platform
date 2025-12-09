@@ -21,11 +21,12 @@ async function bootstrap() {
     redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 
-  // ===== CORS configuration =====
+  // ===== CORS setup =====
   const allowedOrigins = [
-    'http://localhost:5173', // Local frontend
-    'https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app', // Vercel preview
-    'https://dev-sphere-frontend-system.vercel.app', // Vercel production
+    'http://localhost:5173', // local frontend
+    'https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app', // preview
+    'https://dev-sphere-frontend-system-bof654pam-web-s-projects-1a9a631a.vercel.app', // another preview
+    'https://dev-sphere-frontend-system.vercel.app', // production
   ];
 
   app.enableCors({
@@ -36,28 +37,24 @@ async function bootstrap() {
   });
 
   console.log("🟢 Allowed CORS origins:");
-  allowedOrigins.forEach((origin) => console.log(`→ ${origin}`));
+  allowedOrigins.forEach((o) => console.log(o));
 
-  // ===== Static Uploads =====
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads',
-  });
+  // ===== Static uploads =====
+  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
-  // ===== Swagger Setup =====
+  // ===== Swagger setup =====
   const config = new DocumentBuilder()
     .setTitle('Community Platform API')
     .setDescription('API docs for Auth, Posts, Comments, Notifications')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // ===== Start Server =====
+  // ===== Start server =====
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-
   console.log(`🚀 Server running on port ${port}`);
 }
 
