@@ -27,7 +27,7 @@ async function bootstrap() {
       'http://localhost:5173',
 
       // ⭐ Add your Vercel Preview domain
-      'https://dev-sphere-frontend-system-m4k1r12zt-web-s-projects-1a9a631a.vercel.app',
+      'https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app/',
 
       // ⭐ Add your final stable Vercel domain (if exists)
       'https://dev-sphere-frontend.vercel.app',
