@@ -39,7 +39,7 @@ async function bootstrap() {
 
   console.log("🟢 Allowed CORS origins:");
   console.log("http://localhost:5173");
-  console.log("https://dev-sphere-frontend-system-m4k1r12zt-web-s-projects-1a9a631a.vercel.app");
+  console.log("https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app/");
   console.log("https://dev-sphere-frontend.vercel.app");
 
   // ===== Static Uploads =====
