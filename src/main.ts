@@ -21,26 +21,26 @@ async function bootstrap() {
     redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 
-  // ===== UPDATED CORS FOR RAILWAY + VERCEL =====
+  // ===== UPDATED CORS FOR VERCEL PRODUCTION + PREVIEW =====
+  const allowedOrigins = [
+    'http://localhost:5173',
+
+    // ⭐ Correct Vercel Preview Domain
+    'https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app',
+
+    // ⭐ Correct Vercel Production Domain (Main Domain)
+    'https://dev-sphere-frontend-system.vercel.app',
+  ];
+
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-
-      // ⭐ Add your Vercel Preview domain
-      'https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app/',
-
-      // ⭐ Add your final stable Vercel domain (if exists)
-      'https://dev-sphere-frontend.vercel.app',
-    ],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
   console.log("🟢 Allowed CORS origins:");
-  console.log("http://localhost:5173");
-  console.log("https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app/");
-  console.log("https://dev-sphere-frontend.vercel.app");
+  allowedOrigins.forEach((o) => console.log(o));
 
   // ===== Static Uploads =====
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
