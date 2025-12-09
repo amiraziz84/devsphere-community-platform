@@ -21,16 +21,26 @@ async function bootstrap() {
     redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 
-  // ===== FIXED CORS FOR RAILWAY + NETLIFY =====
+  // ===== UPDATED CORS FOR RAILWAY + VERCEL =====
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      'https://super-gelato-a9840f.netlify.app',
+
+      // ⭐ Add your Vercel Preview domain
+      'https://dev-sphere-frontend-system-m4k1r12zt-web-s-projects-1a9a631a.vercel.app',
+
+      // ⭐ Add your final stable Vercel domain (if exists)
+      'https://dev-sphere-frontend.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
+
+  console.log("🟢 Allowed CORS origins:");
+  console.log("http://localhost:5173");
+  console.log("https://dev-sphere-frontend-system-m4k1r12zt-web-s-projects-1a9a631a.vercel.app");
+  console.log("https://dev-sphere-frontend.vercel.app");
 
   // ===== Static Uploads =====
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
@@ -53,7 +63,6 @@ async function bootstrap() {
   await app.listen(port);
 
   console.log(`🚀 Server running on port ${port}`);
-  console.log(`⚙️  CORS allowed origins: http://localhost:5173 , https://super-gelato-a9840f.netlify.app`);
 }
 
 bootstrap();
