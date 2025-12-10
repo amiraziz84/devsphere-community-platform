@@ -21,12 +21,10 @@ async function bootstrap() {
     redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 
-  // ===== CORS setup =====
+  // ===== CORS setup (FINAL CLEAN VERSION) =====
   const allowedOrigins = [
-    'http://localhost:5173', // local frontend
-    'https://dev-sphere-frontend-system-git-main-web-s-projects-1a9a631a.vercel.app', // preview
-    'https://dev-sphere-frontend-system-bof654pam-web-s-projects-1a9a631a.vercel.app', // another preview
-    'https://dev-sphere-frontend-system.vercel.app', // production
+    'http://localhost:5173',
+    'https://dev-sphere-frontend-system.vercel.app', // Main Production Frontend
   ];
 
   app.enableCors({
@@ -37,7 +35,7 @@ async function bootstrap() {
   });
 
   console.log("🟢 Allowed CORS origins:");
-  allowedOrigins.forEach((o) => console.log(o));
+  allowedOrigins.forEach((o) => console.log(" - " + o));
 
   // ===== Static uploads =====
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
@@ -49,6 +47,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
