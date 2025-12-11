@@ -24,15 +24,14 @@ export class UploadsService {
   }
 
   removeOldProfile(filename: string) {
-    const path = this.getProfilePath(filename);
-    if (existsSync(path)) {
-      unlinkSync(path);
-      this.logger.log(`🗑️ Removed old file: ${path}`);
+    const filePath = this.getProfilePath(filename);
+    if (existsSync(filePath)) {
+      unlinkSync(filePath);
+      this.logger.log(`🗑️ Removed old profile: ${filePath}`);
     }
   }
 
   handleFileUpload(file: Express.Multer.File) {
-    this.logger.log(`📁 File uploaded: ${file.originalname}`);
     return {
       message: 'File uploaded successfully!',
       filename: file.filename,

@@ -30,29 +30,40 @@ export class UploadsController {
           const userId = req.user?.userId;
           const fileExt = extname(file.originalname);
           const finalName = `profile_${userId}${fileExt}`;
-
-          // Remove old profile file if exists
           cb(null, finalName);
         },
       }),
       limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
     }),
   )
-  async uploadProfile(@UploadedFile() file: Express.Multer.File, @Req() req: any) {
+  async uploadProfile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: any,
+  ) {
     const userId = req.user.userId;
-    const finalName = file.filename;
+    const newFilename = file.filename;
 
-    // Remove old file
-    this.uploadsService.removeOldProfile(finalName);
+    // 1. Get old file from DB
+    const user = await this.usersService.findById(userId);
+    const oldPath = user?.profilePic;
 
-    // Update DB
-    const profilePath = `/uploads/profile/${finalName}`;
-    await this.usersService.updateProfilePic(userId, profilePath);
+    if (oldPath) {
+      const oldFilename = oldPath.replace('/uploads/profile/', '');
+
+      // 2. Remove old file if it's not same
+      if (oldFilename !== newFilename) {
+        this.uploadsService.removeOldProfile(oldFilename);
+      }
+    }
+
+    // 3. Save new file path in DB
+    const newPath = `/uploads/profile/${newFilename}`;
+    await this.usersService.updateProfilePic(userId, newPath);
 
     return {
       message: 'Profile updated successfully!',
-      filename: finalName,
-      url: profilePath,
+      filename: newFilename,
+      url: newPath,
     };
   }
 }

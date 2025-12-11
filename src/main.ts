@@ -23,8 +23,8 @@ async function bootstrap() {
 
   // ===== CORS setup (FINAL CLEAN VERSION) =====
   const allowedOrigins = [
-    'http://localhost:5173',
-    'https://dev-sphere-frontend-system.vercel.app', // Main Production Frontend
+    "http://localhost:5173",
+    "https://dev-sphere-frontend-system.vercel.app", // Main Production Frontend
   ];
 
   app.enableCors({
@@ -52,7 +52,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // ===== Start server =====
-  const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 8080;
   await app.listen(port);
   console.log(`🚀 Server running on port ${port}`);
 }
