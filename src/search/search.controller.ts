@@ -7,6 +7,11 @@ export class SearchController {
 
   @Get()
   async search(@Query('q') q: string) {
-    return this.searchService.searchAll(q);
+    try {
+      return await this.searchService.searchAll(q);
+    } catch (error) {
+      console.error("SearchController Error:", error);
+      return { users: [], posts: [], tags: [] }; // safe fallback
+    }
   }
 }
